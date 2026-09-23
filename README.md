@@ -1,6 +1,6 @@
 # Máquina Expendedora con Autómata No Determinista (AFN)
 
-Proyecto en Python con arquitectura limpia, enfocado primero en la lógica de un AFN para una máquina expendedora.
+Proyecto en Python con arquitectura limpia, enfocado primero en la lógica de un AFN para una máquina expendedora. holi
 
 ## Objetivo
 

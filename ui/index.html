@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Máquina Expendedora AFN</title>
+    <link rel="stylesheet" href="styles.css?v=20260922d" />
+  </head>
+  <body>
+    <main class="layout">
+      <div class="panel-col">
+        <section class="panel" id="controlPanel">
+          <h1>Máquina Expendedora AFN</h1>
+
+        <div class="input-block">
+          <label for="sequence">Cadena de entrada</label>
+          <input
+            id="sequence"
+            type="text"
+            maxlength="3"
+            placeholder="000"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="status-card" id="statusCard">
+          <p id="statusText">Esperando entrada…</p>
+          <div class="graph-box" id="graphBox">
+            <p id="graphEmpty">Autómata completo (17 estados, 20 transiciones)</p>
+            <svg id="graphSvg" viewBox="0 0 620 440" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div class="table-box" id="tableBox">
+            <p id="tableTitle">Tabla de transición</p>
+            <div class="table-wrap">
+              <table id="transitionTable"></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="params-card">
+        <h2>Parámetros formales del AFN</h2>
+        <div id="paramsGrid"></div>
+
+        <div class="delta-box">
+          <p id="deltaTitle">δ — función de transición</p>
+          <div class="table-wrap">
+            <table id="deltaTable"></table>
+          </div>
+        </div>
+
+        <div class="regex-banner">
+          <p id="regexTitle">Expresión regular del lenguaje</p>
+          <div id="regexList"></div>
+        </div>
+      </section>
+      </div>
+
+      <section class="machine-wrap">
+        <div class="machine-scene">
+          <div class="machine" id="machineBody">
+            <div class="ambient-glow"></div>
+            <div class="machine-header">
+              <span class="brand">Expendedora</span>
+              <div class="status-lights" aria-hidden="true">
+                <span class="light"></span>
+                <span class="light"></span>
+                <span class="light"></span>
+              </div>
+              <span class="screen" id="screenText">---</span>
+            </div>
+
+            <div class="glass">
+              <div id="shelves"></div>
+            </div>
+
+            <div class="chute">
+              <div class="chute-gate" id="chuteGate"></div>
+              <div class="scanner-beam" id="scannerBeam"></div>
+              <div class="product" id="productToken">
+                <img id="productImage" src="assets/margarita.svg" alt="Producto dispensado" />
+                <span class="price-badge" id="productPrice">$1000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js?v=20260922d"></script>
+  </body>
+</html>

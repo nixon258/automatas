@@ -6,6 +6,8 @@ from automata_params import (
     ACCEPTING_STATES,
     ALPHABET,
     INITIAL_STATE,
+    MAX_LENGTH,
+    MIN_LENGTH,
     PRODUCTS_BY_STATE,
     STATES,
     TRANSITIONS,
@@ -203,6 +205,14 @@ class VendingMachine:
 
     def evaluate(self, raw_sequence: str) -> VendingResponse:
         sequence = raw_sequence.strip()
+        if not (MIN_LENGTH <= len(sequence) <= MAX_LENGTH):
+            return VendingResponse(
+                input_sequence=sequence,
+                accepted=False,
+                accepted_products=[],
+                final_states=[],
+                accepted_states=[],
+            )
         result = self.automaton.run(list(sequence))
         products = self.automaton.accepted_products(result)
         return VendingResponse(

@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Máquina Expendedora AFN</title>
-    <link rel="stylesheet" href="styles.css?v=20260922d" />
+    <link rel="stylesheet" href="styles.css?v=20260922h" />
   </head>
   <body>
     <main class="layout">
@@ -20,8 +20,8 @@
           <input
             id="sequence"
             type="text"
-            maxlength="3"
-            placeholder="000"
+            maxlength="4"
+            placeholder="0101"
             autocomplete="off"
             spellcheck="false"
           />
@@ -30,8 +30,8 @@
         <div class="status-card" id="statusCard">
           <p id="statusText">Esperando entrada…</p>
           <div class="graph-box" id="graphBox">
-            <p id="graphEmpty">Autómata completo (17 estados, 20 transiciones)</p>
-            <svg id="graphSvg" viewBox="0 0 620 440" preserveAspectRatio="xMidYMid meet"></svg>
+            <p id="graphEmpty">Autómata completo (33 estados, 36 transiciones)</p>
+            <svg id="graphSvg" viewBox="0 0 620 620" preserveAspectRatio="xMidYMid meet"></svg>
           </div>
           <div class="table-box" id="tableBox">
             <p id="tableTitle">Tabla de transición</p>
@@ -91,6 +91,6 @@
       </section>
     </main>
 
-    <script src="app.js?v=20260922d"></script>
+    <script src="app.js?v=20260922h"></script>
   </body>
 </html>

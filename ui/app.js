@@ -1,57 +1,82 @@
-const STATES = new Set([
-  "q0",
-  "q_after_0",
-  "q_after_1",
-  "q_after_0_alt",
-  "q_after_1_alt",
-  "q_after_00",
-  "q_after_01",
-  "q_after_10",
-  "q_after_11",
-  "q_product_000",
-  "q_product_001",
-  "q_product_010",
-  "q_product_011",
-  "q_product_100",
-  "q_product_101",
-  "q_product_110",
-  "q_product_111",
-]);
+const LEVEL1 = ["q_0", "q_0_alt", "q_1", "q_1_alt"];
+const LEVEL2 = ["q_00", "q_01", "q_10", "q_11"];
+const LEVEL3 = ["q_000", "q_001", "q_010", "q_011", "q_100", "q_101", "q_110", "q_111"];
+const LEVEL4 = [
+  "q_0000", "q_0001", "q_0010", "q_0011",
+  "q_0100", "q_0101", "q_0110", "q_0111",
+  "q_1000", "q_1001", "q_1010", "q_1011",
+  "q_1100", "q_1101", "q_1110", "q_1111",
+];
+
+const STATES = new Set(["q0", ...LEVEL1, ...LEVEL2, ...LEVEL3, ...LEVEL4]);
 
 const ALPHABET = new Set(["0", "1"]);
 const INITIAL_STATE = "q0";
-const ACCEPTING_STATES = new Set([
-  "q_product_000",
-  "q_product_001",
-  "q_product_010",
-  "q_product_011",
-  "q_product_100",
-  "q_product_101",
-  "q_product_110",
-  "q_product_111",
-]);
+const ACCEPTING_STATES = new Set([...LEVEL2, ...LEVEL3, ...LEVEL4]);
+
+const SYMBOL_VALUES = { 0: 500, 1: 1000 };
+const MIN_LENGTH = 2;
+const MAX_LENGTH = 4;
+const AMOUNTS = [1000, 1500, 2000, 2500, 3000, 3500, 4000];
+const TOTAL_SHELF_ITEMS = 12;
+
+const AMOUNT_CHAINS = (() => {
+  const result = new Map(AMOUNTS.map((amount) => [amount, []]));
+  for (let length = MIN_LENGTH; length <= MAX_LENGTH; length += 1) {
+    const total = 1 << length;
+    for (let mask = 0; mask < total; mask += 1) {
+      const chain = mask.toString(2).padStart(length, "0");
+      result.get(valueOfSequence(chain)).push(chain);
+    }
+  }
+  return result;
+})();
+
+function valueOfSequence(sequence) {
+  let ones = 0;
+  for (const symbol of sequence) {
+    if (symbol === "1") ones += 1;
+  }
+  return 500 * (sequence.length + ones);
+}
 
 const TRANSITIONS = [
-  ["q0", "0", "q_after_0"],
-  ["q0", "0", "q_after_0_alt"],
-  ["q0", "1", "q_after_1"],
-  ["q0", "1", "q_after_1_alt"],
-  ["q_after_0", "0", "q_after_00"],
-  ["q_after_0", "1", "q_after_01"],
-  ["q_after_0_alt", "0", "q_after_00"],
-  ["q_after_0_alt", "1", "q_after_01"],
-  ["q_after_1", "0", "q_after_10"],
-  ["q_after_1", "1", "q_after_11"],
-  ["q_after_1_alt", "0", "q_after_10"],
-  ["q_after_1_alt", "1", "q_after_11"],
-  ["q_after_00", "0", "q_product_000"],
-  ["q_after_00", "1", "q_product_001"],
-  ["q_after_01", "0", "q_product_010"],
-  ["q_after_01", "1", "q_product_011"],
-  ["q_after_10", "0", "q_product_100"],
-  ["q_after_10", "1", "q_product_101"],
-  ["q_after_11", "0", "q_product_110"],
-  ["q_after_11", "1", "q_product_111"],
+  ["q0", "0", "q_0"],
+  ["q0", "0", "q_0_alt"],
+  ["q0", "1", "q_1"],
+  ["q0", "1", "q_1_alt"],
+  ["q_0", "0", "q_00"],
+  ["q_0", "1", "q_01"],
+  ["q_0_alt", "0", "q_00"],
+  ["q_0_alt", "1", "q_01"],
+  ["q_1", "0", "q_10"],
+  ["q_1", "1", "q_11"],
+  ["q_1_alt", "0", "q_10"],
+  ["q_1_alt", "1", "q_11"],
+  ["q_00", "0", "q_000"],
+  ["q_00", "1", "q_001"],
+  ["q_01", "0", "q_010"],
+  ["q_01", "1", "q_011"],
+  ["q_10", "0", "q_100"],
+  ["q_10", "1", "q_101"],
+  ["q_11", "0", "q_110"],
+  ["q_11", "1", "q_111"],
+  ["q_000", "0", "q_0000"],
+  ["q_000", "1", "q_0001"],
+  ["q_001", "0", "q_0010"],
+  ["q_001", "1", "q_0011"],
+  ["q_010", "0", "q_0100"],
+  ["q_010", "1", "q_0101"],
+  ["q_011", "0", "q_0110"],
+  ["q_011", "1", "q_0111"],
+  ["q_100", "0", "q_1000"],
+  ["q_100", "1", "q_1001"],
+  ["q_101", "0", "q_1010"],
+  ["q_101", "1", "q_1011"],
+  ["q_110", "0", "q_1100"],
+  ["q_110", "1", "q_1101"],
+  ["q_111", "0", "q_1110"],
+  ["q_111", "1", "q_1111"],
 ];
 
 const PRODUCT_BANK = [
@@ -81,17 +106,6 @@ const PRODUCT_BANK = [
   { name: "Papas Rizadas", price: 3000, code: "RIZADAS" },
 ];
 
-const PRODUCT_STATES = [
-  "q_product_000",
-  "q_product_001",
-  "q_product_010",
-  "q_product_011",
-  "q_product_100",
-  "q_product_101",
-  "q_product_110",
-  "q_product_111",
-];
-
 function hashHue(name) {
   let hash = 0;
   for (let i = 0; i < name.length; i += 1) {
@@ -115,38 +129,69 @@ function makePlaceholderSVG(name) {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-function buildProductSelection() {
-  const picked = shuffle([...PRODUCT_BANK]).slice(0, PRODUCT_STATES.length);
-  const byPrice = [...picked].sort((a, b) => a.price - b.price);
-  const priority = new Map();
-  priority.set(byPrice[0].name, "1° más económico");
-  priority.set(byPrice[1].name, "2° solicitado");
-
-  const productsByState = {};
-  const states = shuffle([...PRODUCT_STATES]);
-  const priorityStates = new Set();
-
-  states.forEach((state, index) => {
-    const product = picked[index];
-    const binary = state.replace("q_product_", "");
-    productsByState[state] = {
-      name: product.name,
-      price: product.price,
-      display_code: String(product.price),
-      internal_id: `P${product.price}-${product.code}-${binary}`,
-      image: product.image || makePlaceholderSVG(product.name),
-      fallbackImage: product.fallbackImage || makePlaceholderSVG(product.name),
-      priorityLabel: priority.get(product.name) || product.name,
-    };
-    if (priority.has(product.name)) priorityStates.add(state);
-  });
-
-  PRIORITY_STATES = priorityStates;
-  return productsByState;
+function toProductDisplay(product) {
+  return {
+    name: product.name,
+    price: product.price,
+    display_code: String(product.price),
+    internal_id: `P${product.price}-${product.code}`,
+    image: product.image || makePlaceholderSVG(product.name),
+    fallbackImage: product.fallbackImage || makePlaceholderSVG(product.name),
+  };
 }
 
-let PRIORITY_STATES = new Set();
-let PRODUCTS_BY_STATE = buildProductSelection();
+function buildProductSelection() {
+  const total = TOTAL_SHELF_ITEMS;
+  const available = shuffle([...PRODUCT_BANK]);
+  const picked = [];
+  const used = new Map(AMOUNTS.map((amount) => [amount, 0]));
+  const capacity = (amount) => AMOUNT_CHAINS.get(amount).length;
+
+  for (const amount of AMOUNTS) {
+    const index = available.findIndex((item) => item.price === amount);
+    if (index !== -1) {
+      picked.push(available.splice(index, 1)[0]);
+      used.set(amount, 1);
+    }
+  }
+  while (picked.length < total && available.length > 0) {
+    const index = available.findIndex(
+      (item) => used.get(item.price) < capacity(item.price)
+    );
+    if (index === -1) break;
+    const item = available.splice(index, 1)[0];
+    picked.push(item);
+    used.set(item.price, used.get(item.price) + 1);
+  }
+
+  const shelf = shuffle(picked).map(toProductDisplay);
+  const labeled = new Set();
+  for (const product of shelf) {
+    if (!labeled.has(product.price) && (product.price === 1000 || product.price === 1500)) {
+      product.priorityLabel = product.price === 1000 ? "1° más económico" : "2° solicitado";
+      labeled.add(product.price);
+    } else {
+      product.priorityLabel = product.name;
+    }
+  }
+
+  const byAmount = new Map();
+  for (const amount of AMOUNTS) {
+    byAmount.set(amount, shelf.filter((product) => product.price === amount));
+  }
+
+  PRODUCTS_BY_AMOUNT = byAmount;
+  return shelf;
+}
+
+function pickProductByChain(sequence, candidates) {
+  if (candidates.length === 1) return candidates[0];
+  const index = parseInt(sequence, 2) % candidates.length;
+  return candidates[index];
+}
+
+let PRODUCTS_BY_AMOUNT = new Map();
+let SHELF_ITEMS = buildProductSelection();
 
 function shuffle(items) {
   for (let i = items.length - 1; i > 0; i -= 1) {
@@ -156,11 +201,11 @@ function shuffle(items) {
   return items;
 }
 
-function buildRandomShelfRows() {
-  const states = shuffle(Object.keys(PRODUCTS_BY_STATE));
+function buildShelfRows() {
+  const items = shuffle([...SHELF_ITEMS]);
   const rows = [];
-  for (let i = 0; i < states.length; i += 2) {
-    rows.push([states[i], states[i + 1]]);
+  for (let i = 0; i < items.length; i += 3) {
+    rows.push([items[i], items[i + 1], items[i + 2]]);
   }
   return rows;
 }
@@ -194,7 +239,7 @@ function runNFA(input) {
   }
 
   const acceptedStates = [...currentStates].filter((state) => ACCEPTING_STATES.has(state));
-  const products = acceptedStates.map((state) => PRODUCTS_BY_STATE[state]).filter(Boolean);
+  const products = acceptedStates.length > 0 ? (PRODUCTS_BY_AMOUNT.get(valueOfSequence(input)) || []).slice() : [];
 
   return {
     finalStates: [...currentStates].sort(),
@@ -368,11 +413,11 @@ function renderTransitionTable(sequence = "") {
 function renderGraph({
   levels = fullGraph.levels,
   edges = fullGraph.edges,
-  title = "Autómata completo (17 estados, 20 transiciones)",
+  title = "Autómata completo (33 estados, 36 transiciones)",
   activeEdges = new Set(),
   activeStates = new Set(),
   acceptedStates = [],
-  height = 440,
+  height = 620,
 } = {}) {
   graphEmpty.style.display = "block";
   graphEmpty.textContent = title;
@@ -386,8 +431,8 @@ function renderGraph({
   const yPadding = 34;
   const columns = Math.max(levels.length - 1, 1);
   const xStep = (width - xPadding * 2) / columns;
-  const nodeWidth = 76;
-  const nodeHeight = 34;
+  const nodeWidth = 58;
+  const nodeHeight = 22;
 
   const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
   const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
@@ -514,14 +559,15 @@ function renderGraph({
 
 function renderAutomatonGraph(sequence = "", acceptedStates = []) {
   const { activeEdges, activeStates } = buildTraceHighlightKeys(sequence);
+  const accepted = sequence ? acceptedStates : [...ACCEPTING_STATES];
   const title = sequence
     ? `Autómata completo — ruta de "${sequence}" resaltada`
-    : "Autómata completo (17 estados, 20 transiciones)";
+    : "Autómata completo (33 estados, 36 transiciones)";
   renderGraph({
     title,
     activeEdges,
     activeStates,
-    acceptedStates,
+    acceptedStates: accepted,
   });
 }
 
@@ -579,15 +625,16 @@ function attachImageFallback(imgElement, fallbackImage) {
 
 function renderShelves() {
   shelvesContainer.innerHTML = "";
-  for (const row of buildRandomShelfRows()) {
+  for (const row of buildShelfRows()) {
     const shelf = document.createElement("div");
     shelf.className = "shelf";
 
-    for (const state of row) {
-      const product = PRODUCTS_BY_STATE[state];
+    for (const product of row) {
+      if (!product) continue;
       const card = document.createElement("span");
       card.className = "item-card";
-      card.dataset.state = state;
+      card.dataset.price = product.display_code;
+      card.dataset.name = product.name;
 
       const img = document.createElement("img");
       img.src = product.image;
@@ -602,7 +649,7 @@ function renderShelves() {
       label.className = "item-label";
       label.textContent = product.priorityLabel || product.name;
 
-      if (PRIORITY_STATES.has(state)) {
+      if (product.priorityLabel && product.priorityLabel.includes("°")) {
         card.classList.add("item-priority");
       }
 
@@ -616,17 +663,17 @@ function renderShelves() {
   }
 }
 
-function highlightSelectedState(state) {
+function highlightSelectedProduct(productName) {
   const cards = shelvesContainer.querySelectorAll(".item-card");
   for (const card of cards) {
     card.classList.remove("item-selected");
   }
 
-  if (!state) {
+  if (!productName) {
     return;
   }
 
-  const selected = shelvesContainer.querySelector(`.item-card[data-state='${state}']`);
+  const selected = shelvesContainer.querySelector(`.item-card[data-name='${productName}']`);
   if (selected) {
     selected.classList.add("item-selected");
   }
@@ -708,6 +755,142 @@ function renderDeltaTable() {
   deltaTable.appendChild(tbody);
 }
 
+function expandSuperscripts(pattern) {
+  const sup = { "²": 2, "³": 3, "⁴": 4, "⁵": 5, "⁶": 6, "⁷": 7, "⁸": 8, "⁹": 9 };
+  let out = "";
+  let i = 0;
+  while (i < pattern.length) {
+    const ch = pattern[i];
+    if (sup[ch]) {
+      if (out.endsWith(")")) {
+        const open = out.lastIndexOf("(");
+        const group = out.slice(open);
+        out = out.slice(0, open);
+        for (let k = 0; k < sup[ch]; k += 1) {
+          out += group;
+        }
+      }
+      i += 1;
+      continue;
+    }
+    out += ch === "∪" ? "|" : ch;
+    i += 1;
+  }
+  return out;
+}
+
+function regexToAst(pattern) {
+  pattern = pattern.replace(/\s/g, "");
+  let i = 0;
+  function parseAlt() {
+    const alternatives = [parseSeq()];
+    while (i < pattern.length && pattern[i] === "|") {
+      i += 1;
+      alternatives.push(parseSeq());
+    }
+    return alternatives.length > 1 ? { type: "alt", alts: alternatives } : alternatives[0];
+  }
+  function parseSeq() {
+    const items = [];
+    while (i < pattern.length && pattern[i] !== "|" && pattern[i] !== ")") {
+      items.push(parseAtom());
+    }
+    return items.length === 1 ? items[0] : { type: "seq", items };
+  }
+  function parseAtom() {
+    let node;
+    const ch = pattern[i];
+    if (ch === "(") {
+      i += 1;
+      node = parseAlt();
+      if (pattern[i] === ")") i += 1;
+    } else {
+      node = { type: "lit", ch };
+      i += 1;
+    }
+    if (pattern[i] === "?") {
+      i += 1;
+      node = { type: "opt", node };
+    }
+    return node;
+  }
+  return parseAlt();
+}
+
+function regexMatchEnds(node, sequence, pos) {
+  if (node.type === "lit") {
+    return sequence[pos] === node.ch ? new Set([pos + 1]) : new Set();
+  }
+  if (node.type === "opt") {
+    const set = new Set([pos]);
+    for (const end of regexMatchEnds(node.node, sequence, pos)) {
+      set.add(end);
+    }
+    return set;
+  }
+  if (node.type === "seq") {
+    let positions = new Set([pos]);
+    for (const item of node.items) {
+      const next = new Set();
+      for (const p of positions) {
+        for (const end of regexMatchEnds(item, sequence, p)) {
+          next.add(end);
+        }
+      }
+      positions = next;
+      if (positions.size === 0) break;
+    }
+    return positions;
+  }
+  const set = new Set();
+  for (const alt of node.alts) {
+    for (const end of regexMatchEnds(alt, sequence, pos)) {
+      set.add(end);
+    }
+  }
+  return set;
+}
+
+function regexMatches(pattern, sequence) {
+  return regexMatchEnds(regexToAst(pattern), sequence, 0).has(sequence.length);
+}
+
+function binaryStringsSet() {
+  const set = new Set();
+  for (let len = MIN_LENGTH; len <= MAX_LENGTH; len += 1) {
+    for (let mask = 0; mask < 1 << len; mask += 1) {
+      set.add(mask.toString(2).padStart(len, "0"));
+    }
+  }
+  return set;
+}
+
+function verifyRegexNotations(notations) {
+  const expected = binaryStringsSet();
+  const rejected = ["0", "1", "00000", "11111", "01010"];
+  for (const notation of notations) {
+    const pattern = expandSuperscripts(notation.text);
+    let ok = true;
+    for (const word of expected) {
+      if (!regexMatches(pattern, word)) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) {
+      for (const word of rejected) {
+        if (regexMatches(pattern, word)) {
+          ok = false;
+          break;
+        }
+      }
+    }
+    if (!ok) {
+      console.warn(`[regex] ${notation.label} no coincide con el autómata`);
+    }
+  }
+}
+
 function renderRegex() {
   if (!regexList) {
     return;
@@ -716,11 +899,35 @@ function renderRegex() {
 
   const symbols = [...ALPHABET].sort();
   const alt = `(${symbols.join("|")})`;
+  const superscripts = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
+
+  const groups = [LEVEL2, LEVEL3, LEVEL4].map((level) => {
+    const terms = level.map((state) => state.replace("q_", "")).join("|");
+    return `(${terms})`;
+  });
+  const expanded = groups.join(" ∪ ");
+
+  let compacta = "";
+  for (let i = 0; i < MIN_LENGTH; i += 1) {
+    compacta += alt;
+  }
+  for (let i = 0; i < MAX_LENGTH - MIN_LENGTH; i += 1) {
+    compacta += `${alt}?`;
+  }
+
+  const potenciaParts = [];
+  for (let len = MIN_LENGTH; len <= MAX_LENGTH; len += 1) {
+    potenciaParts.push(`${alt}${superscripts[len]}`);
+  }
+  const potencia = potenciaParts.join(" ∪ ");
+
   const notations = [
-    { label: "Expandida", text: alt.repeat(3) },
-    { label: "Compacta", text: `[${symbols.join("")}]{3}` },
-    { label: "Potencia", text: `${alt}³` },
+    { label: "Expandida", text: expanded },
+    { label: "Compacta", text: compacta },
+    { label: "Potencia", text: potencia },
   ];
+
+  verifyRegexNotations(notations);
 
   for (const notation of notations) {
     const item = document.createElement("div");
@@ -806,30 +1013,30 @@ function evaluateNow() {
     screenText.textContent = "---";
     renderAutomatonGraph("");
     renderTransitionTable("");
-    highlightSelectedState(null);
+    highlightSelectedProduct(null);
     return;
   }
 
-  if (sequence.length < 3) {
-    statusText.textContent = "Cadena incompleta. Debe tener 3 caracteres.";
+  if (sequence.length < MIN_LENGTH) {
+    statusText.textContent = `Cadena incompleta. Mínimo ${MIN_LENGTH} caracteres.`;
     setStatusClass("status-warn");
     screenText.textContent = sequence;
     const partialResult = runNFA(sequence);
     renderAutomatonGraph(sequence, partialResult.acceptedStates);
     renderTransitionTable(sequence);
-    highlightSelectedState(null);
+    highlightSelectedProduct(null);
     return;
   }
 
-  if (sequence.length > 3) {
-    statusText.textContent = "Cadena demasiado larga. Solo 3 caracteres.";
+  if (sequence.length > MAX_LENGTH) {
+    statusText.textContent = `Cadena demasiado larga. Máximo ${MAX_LENGTH} caracteres.`;
     setStatusClass("status-bad");
-    const clipped = sequence.slice(0, 3);
+    const clipped = sequence.slice(0, MAX_LENGTH);
     screenText.textContent = clipped;
     const clippedResult = runNFA(clipped);
     renderAutomatonGraph(clipped, clippedResult.acceptedStates);
     renderTransitionTable(clipped);
-    highlightSelectedState(null);
+    highlightSelectedProduct(null);
     return;
   }
 
@@ -839,15 +1046,15 @@ function evaluateNow() {
   renderTransitionTable(sequence);
 
   if (result.accepted && result.products.length > 0) {
-    const product = result.products[0];
-    statusText.textContent = `Producto dispensado: ${product.name}`;
+    const product = pickProductByChain(sequence, result.products);
+    statusText.textContent = `Pagaste $${product.display_code} → Producto dispensado: ${product.name}`;
     setStatusClass("status-ok");
-    highlightSelectedState(result.acceptedStates[0]);
+    highlightSelectedProduct(product.name);
     animateProduct(product.image, product.fallbackImage, product.name, product.display_code);
   } else {
     statusText.textContent = "Cadena no aceptada por el autómata.";
     setStatusClass("status-bad");
-    highlightSelectedState(null);
+    highlightSelectedProduct(null);
   }
 }
 

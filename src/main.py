@@ -275,7 +275,10 @@ def run_cli(machine: VendingMachine) -> None:
 
             print("\nResultado:")
             print(f"- Cadena: {response.input_sequence}")
-            print(f"- Pertenece al AFN: {'Sí' if response.accepted else 'No'}")
+            if response.accepted:
+                print(f"- La cadena {response.input_sequence} pertenece al AFN.")
+            else:
+                print(f"- La cadena {response.input_sequence} no pertenece al AFN.")
             print(f"- Estados finales activos: {response.final_states}")
             print(f"- Estados de aceptación activos: {response.accepted_states}")
 
@@ -283,8 +286,6 @@ def run_cli(machine: VendingMachine) -> None:
                 print("- Productos dispensados:")
                 for product in response.accepted_products:
                     print(f"  * {product.name} | id interno={product.internal_id}")
-            else:
-                print("- La cadena no pertenece al AFN: no se dispensa producto")
             continue
 
         print("Opción no válida.")

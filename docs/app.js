@@ -1018,7 +1018,7 @@ function evaluateNow() {
   }
 
   if (sequence.length < MIN_LENGTH) {
-    statusText.textContent = `La cadena no pertenece al AFN: demasiado corta (mínimo ${MIN_LENGTH} símbolos).`;
+    statusText.textContent = `La cadena ${sequence} no pertenece al AFN.`;
     setStatusClass("status-warn");
     screenText.textContent = sequence;
     const partialResult = runNFA(sequence);
@@ -1029,7 +1029,7 @@ function evaluateNow() {
   }
 
   if (sequence.length > MAX_LENGTH) {
-    statusText.textContent = `La cadena no pertenece al AFN: demasiado larga (máximo ${MAX_LENGTH} símbolos).`;
+    statusText.textContent = `La cadena ${sequence} no pertenece al AFN.`;
     setStatusClass("status-bad");
     const clipped = sequence.slice(0, MAX_LENGTH);
     screenText.textContent = clipped;
@@ -1047,7 +1047,7 @@ function evaluateNow() {
 
   if (result.accepted && result.products.length > 0) {
     const product = pickProductByChain(sequence, result.products);
-    statusText.textContent = `La cadena ${sequence} pertenece al AFN. Pagaste $${product.display_code} → Producto dispensado: ${product.name}`;
+    statusText.textContent = `La cadena ${sequence} pertenece al AFN.`;
     setStatusClass("status-ok");
     highlightSelectedProduct(product.name);
     animateProduct(product.image, product.fallbackImage, product.name, product.display_code);

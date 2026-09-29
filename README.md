@@ -1,34 +1,31 @@
 # Máquina Expendedora con Autómata No Determinista (AFN)
 
-Proyecto en Python con arquitectura limpia, enfocado primero en la lógica de un AFN para una máquina expendedora. holi
+Máquina expendedora modelada con un AFN. Cada símbolo de la cadena es una moneda: `0` = $500, `1` = $1000. Las cadenas válidas miden entre **2 y 4 caracteres** y su valor total (precio) determina el producto a dispensar.
 
-## Objetivo
+## Demo en línea
 
-Modelar una máquina con **8 productos internos** usando un AFN, donde cada producto se selecciona con una cadena binaria de **3 caracteres**.
+El sitio está publicado en GitHub Pages:
 
-Secuencias válidas de selección:
-- `000`, `001`, `010`, `011`, `100`, `101`, `110`, `111`
+- **https://nixon258.github.io/automatas/**
 
-## Estructura simplificada
+## Estructura
 
-- `src/automata_params.py`: contiene la definición formal del AFN (`Q`, `Σ`, `δ`, `q0`, `F`) y el catálogo de productos.
-- `src/main.py`: contiene el motor del AFN, ejecución de cadenas y CLI.
-- `ui/index.html`, `ui/styles.css`, `ui/app.js`: interfaz web animada de máquina expendedora.
+- `src/automata_params.py`: definición formal del AFN (`Q`, `Σ`, `δ`, `q0`, `F`), cadenas por monto y catálogo de productos.
+- `src/main.py`: motor del AFN, ejecución de cadenas y CLI.
+- `docs/`: interfaz web animada de la máquina expendedora (publicada en GitHub Pages).
 
-## Ejecución
+## Ejecución local
 
-Desde la raíz del proyecto:
+Simulador de consola (desde la raíz):
 
 ```bash
 python src/main.py
 ```
 
-## Interfaz web animada
-
-Desde la carpeta `ui`:
+Interfaz web (servida desde `docs/`):
 
 ```bash
-python -m http.server 5500
+python -m http.server 5500 -d docs
 ```
 
 Luego abre:
@@ -37,10 +34,16 @@ Luego abre:
 http://127.0.0.1:5500/index.html
 ```
 
-## Qué expone la lógica
+## Reglas del AFN
 
-- 5 parámetros del AFN: `Q`, `Σ`, `δ`, `q0`, `F`
-- Grafo de transiciones (lista de adyacencia)
-- Tabla de transición
-- Simulación del AFN sobre una cadena
-- Resolución de productos aceptados (incluyendo estados múltiples por no determinismo)
+- **Alfabeto**: `Σ = {0, 1}` (monedas de $500 y $1000).
+- **Cadenas válidas**: longitud entre 2 y 4 → precio entre $1000 y $4000 (múltiplos de $500).
+- **Estructura**: 33 estados, 36 transiciones, 28 estados de aceptación (un estado por cadena válida).
+- **Producto**: cuando varias cadenas pagan el mismo monto, la forma binaria de la cadena decide la tarjeta: `candidatas[valorBinario(cadena) mod n]`.
+
+## Qué expone la interfaz
+
+- Parámetros formales del AFN (`Q`, `Σ`, `δ`, `q0`, `F`) y tabla de transición.
+- Grafo de transiciones con resaltado del camino según la cadena ingresada.
+- Expresión regular del lenguaje (expandida, compacta y por potencias) verificada automáticamente.
+- Estantes con 12 productos; dispense con sonido, animación y resalte de la tarjeta elegida.
